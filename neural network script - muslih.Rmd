@@ -1,0 +1,129 @@
+---
+title: "Testing Rstudio ADSPA"
+author: "Muslih Hakim"
+date: "3/17/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+ctrl + alt + i --> membuat chunk
+run 1 baris kode --> ctrl + enter
+run 1 chunk --> ctrl + shift + enter
+
+```{r}
+#setwd("C:/Users/ASUS/Downloads/data")
+```
+
+```{r}
+heart_dis <- read.csv("whas1.csv", head=TRUE, sep=",")
+
+head(heart_dis)
+```
+
+```{r}
+str(heart_dis)
+
+glimpse(heart_dis)
+```
+
+```{r}
+heart_dis <- heart_dis[, -1]
+```
+
+```{r}
+str(heart_dis)
+```
+
+```{r}
+summary(heart_dis)
+```
+
+
+```{r}
+heart_dis[1:12] <- scale(heart_dis[1:12])
+```
+
+
+```{r}
+set.seed(12345)
+```
+
+```{r}
+tail(heart_dis)
+```
+
+
+```{r}
+ind <- sample(2, nrow(heart_dis), replace = TRUE, prob = c(0.7, 0.3))
+train.data <- heart_dis[ind == 1, ]
+test.data <- heart_dis[ind == 2, ]
+```
+
+```{r}
+
+nn <- neuralnet(formula = FSTAT ~ AGE + SEX + CPK + SHO + CHF + MIORD + 
+                  MITYPE + YEAR + YRGRP + LENSTAY + DSTAT + LENFOL, 
+                data = train.data, hidden = c(3),
+                err.fct = "ce", linear.output = FALSE)
+
+plot(nn)
+```
+
+
+```{r}
+summary(nn)
+```
+
+
+```{r}
+nn$response[1:20]
+```
+
+```{r}
+nn$net.result[[1]][1:20]
+```
+```{r}
+nn$result.matrix
+```
+
+
+```{r}
+plot(nn)
+```
+
+
+```{r}
+mypredict <- neuralnet::compute(nn, nn$covariate)$net.result
+mypredict <- apply(mypredict, c(1), round)
+```
+
+
+```{r}
+mypredict[1:20]
+```
+
+```{r}
+table(mypredict, train.data$FSTAT, dnn =c("Predicted", "Actual"))
+```
+
+```{r}
+testPred <- neuralnet::compute(nn, test.data[, 0:12])$net.result
+testPred <- apply(testPred, c(1), round)
+```
+
+
+```{r}
+table(testPred, test.data$FSTAT, dnn = c("Predicted", "Actual"))
+```
+
+
+```{r}
+```
+
+```{python}
+
+```
+

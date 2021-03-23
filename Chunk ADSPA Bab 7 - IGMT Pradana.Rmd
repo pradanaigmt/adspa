@@ -1,0 +1,321 @@
+---
+title: "Bab VII - Dasar Algoritme Machine Learning"
+author: "IGMT Pradana - F3601201018"
+date: "3/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Tujuan Pembelajaran
+1. Mampu mendefinisikan supervised dan unsupervised learning; prediktor dan target variabel; serta membuat data training dan testing dari dataset
+2. Mampu memahami konsep algoritma machine learning dasar
+3. Mampu menerapkan algoritme machine learning dasar
+4. Mampu mengevaluasi model machine learning yang dibuat
+
+#Pengertian
+Machine Learning bertujuan untuk membuat mesin atau komputer dapat belajar sendiri dengan melakukan inferensi atau merefleksikan pola-pola data dengan pendekatan matematis. Sebuah algoritme machine learning mampu mengidentifikasi pola pada data observasi, membangun model dan memprediksi hal-hal tanpa perlu diprogram secara eksplisit. Pahami pengertian dan pembagian Unsupervised Learning dan Supervised Learning, dataset, prediktor dan target variabel (baca pada Buku Modul Halaman 172)
+
+#Persiapan Library
+Sebelum lebih lanjut pada bab sebelumnya mungkin sudah dijelaskan mengenai cara untuk menginstall library yang dibutuhkan serta memasukan dataset dari luar RStudio. Adapun daftar Library yang perlu diinstall pada bab ini diantaranya: (sambil jalan juga bisa diinstall asal ada koneksi internet)
+- dplyr: A Grammar of Data Manipulation
+- MLmetrics: Machine Learning Evaluation Metrics
+- GGally: Extension to 'ggplot2'
+- lmtest: Diagnostic Checking in Regression Relationships
+- car
+- caret: untuk evaluasi model dengan confusion matrix 
+- partykit: untuk pemodelan decision tree
+- neuralnet: 
+- FactoMineR:
+- fpc 
+- dbscan
+- factoextra
+
+#Mempersiapkan data set
+Misalkan kita menggunakan dataset Iris atau mtcars yang sudah disediakan pada RStudio. Kita dapat mengecek komponen variabel datanya dengan perintah head() sehingga akan ditampilkan semua kolom variabel dengan 6 baris teratas.
+
+```{r}
+head(iris)
+
+```
+
+```{r}
+head(mtcars)
+```
+
+#Keterangan:
+• mpg = Mil / galon (AS) 
+• cyl = Jumlah silinder 
+• disp = Perpindahan disp (cu.in.) 
+• hp = tenaga kuda bruto 
+• drat = drat Rasio gandar belakang 
+• wt = Berat (1000 lbs) 
+• qsec = 1/4 mil waktu 
+• vs = Mesin (0 = berbentuk V, 1 = lurus) 
+• am = Transmisi (0 = otomatis, 1 = manual) 
+• gear = Jumlah gigi maju 
+• carb = Jumlah karburator
+
+------------------------------------------------------------
+#Contoh Kasus OLS (Ordinary Least Square):
+
+Pembuatan Data Training dan Data Testing Dari dataset mtcars., pada contoh ini kami akan mensample secara random index dimana dengan perbandingan data train dan test adalah (75% : 25%), sebagai berikut:
+
+```{r}
+set.seed(123)
+idx <- sample(nrow(mtcars), nrow(mtcars)*0.75)
+train <- mtcars[idx,]
+test <- mtcars[-idx,]
+```
+
+Kode diatas telah memisahkan data menjadi data train dan test. Selanjutnya mari kita tunjukkan hasilnya.
+
+```{r}
+head(train, 3)
+```
+
+```{r}
+head(train, 3)
+```
+
+#Melakukan Training
+Setelah data dibagi menjadi data train dan data test, hal selanjutnya yang dapat dilakukan adalah membuat pemodelan machine learning. Pada contoh ini kita akan mencari jenis mobil mana yang paling irit menghabiskan bahan bakar, sehingga target variabelnya adalah mpg (Mile per Gallon). Semakin besar mpg, maka semakin irit mobil tersebut. Variabel mpg akan diprediksi berdasarkan 10 prediktor lainnya yaitu cyl, disp, …, carb.
+
+
+```{r}
+model <- lm(formula = mpg~., data = train)
+summary(model)
+```
+
+#Melakukan Testing
+Setelah membuat pemodelan, kita dapat memprediksi model menggunakan data testing yang sudah kita persiapkan sebelumnya. Dari hasil prediksi yang diperoleh, kita dapat melihat bahwa nilai prediksi tertinggi adalah pada jenis mobil Toyota Corona. Nilai ini juga dapat kita bandingkan dengan mpg dari data testing seperti ditunjukkan dibawah ini.
+
+```{r}
+library(dplyr)
+pred <- predict(model, test) 
+cbind(test, pred) %>% 
+  select(mpg, pred)
+```
+
+```{r}
+library(MLmetrics)
+RMSE(pred, test$mpg)
+```
+```{r}
+library(GGally)
+ggcorr(mtcars, label = T, hjust = 1, layout.exp = 3)
+```
+
+```{r}
+cor.test(mtcars$cyl, mtcars$mpg)
+```
+
+```{r}
+cor.test(mtcars$wt, mtcars$mpg)
+```
+# pengujian statistik untuk normality 
+
+```{r}
+shapiro.test(model$residuals)
+```
+
+```{r}
+summary(model)
+```
+#test statistik untuk cek homoscedasticity
+
+```{r}
+library(lmtest)
+bptest(model)
+```
+
+```{r}
+library(car)
+vif(model)
+```
+
+-------------------------------------------------------------------------------
+#Klasifikasi: Decision Tree
+
+Cek iris dataset. 
+
+```{r}
+head(iris, 5)
+```
+
+Pembuatan data training dan data testing.
+Pada contoh data akan dibagi dengan perbandingan data train dan data test yaitu (80% : 20%) 
+
+```{r}
+set.seed(100) 
+RNGkind(sample.kind ="Rejection") 
+idx_iris <- sample(nrow(iris), nrow(iris)*0.8) 
+train_iris <- iris[idx_iris,] 
+test_iris <- iris[-idx_iris,]
+```
+
+```{r}
+head(train_iris)
+```
+
+```{r}
+library(caret)
+library(partykit)
+model_iris <- ctree(formula = Species ~ ., data = train_iris)
+plot(model_iris, type = "simple")
+```
+
+```{r}
+pred_iris <- predict(model_iris, train_iris) 
+confusionMatrix(pred_iris, train_iris$Species)
+```
+
+```{r}
+pred_iris <- predict(model_iris, test_iris)
+confusionMatrix(pred_iris, test_iris$Species)
+```
+
+-----------------------------------------------------------------------------
+#Contoh Kasus ANN
+
+```{r}
+read.csv("Indian Liver Patient Dataset (ILPD).csv")
+```
+
+```{r}
+library(tidyverse)
+library(neuralnet)
+data=read.csv("Indian Liver Patient Dataset (ILPD).csv")
+data <- drop_na(data)
+str(data)
+```
+
+```{r}
+ind <- sample(2, nrow(data), replace = TRUE, prob = c(0.7, 0.3))
+train.data <- data[ind == 1, ]
+test.data <- data[ind == 2, ]
+```
+
+```{r}
+feats<-names(data[,1:10]) #concatenate strings 
+f <-paste(feats,collapse='+');f 
+f1<-paste('Selector~',f);f1 #convert to formula 
+f2<-as.formula(f1);f2
+```
+```{r}
+Selector ~ Age + Gender + TB + DB + Alkphos + SGPT + SGOT + TP + AIB + A.G.Ratio
+```
+
+SSE = Sum Square Error
+CE = Cross Error
+```{r}
+library(neuralnet) 
+nn <- neuralnet(f2,train.data,hidden=7)
+plot(nn)
+```
+
+```{r}
+pred_ann <- neuralnet::compute(nn,test.data[1:10])
+pred_ann1 <- ifelse(pred_ann$net.result > 0.5, 1, 0)
+conf_matrix=table(pred_ann1,test.data$Selector);conf_matrix 
+accuracy_nn=(conf_matrix[1,1]+conf_matrix[2,2])/sum(conf_matrix)
+accuracy_nn
+```
+
+
+-----------------------------------------------------------------------------
+#K-Means
+
+```{r}
+library(dplyr) 
+library(FactoMineR) 
+library(ggplot2)
+```
+
+```{r}
+iris_clean <- iris[,-5] 
+boxplot(iris, colSums(is.na(iris_clean)))
+```
+
+```{r}
+iris_scale <- scale(iris_clean, center = T,scale = T)
+summary(iris_clean)
+```
+
+```{r}
+wss <- function(data, maxCluster = 10) { 
+  # Initialize within sum of squares 
+  # SSw <- (nrow(data) - 1) * sum(apply(data, 2, var)) 
+  SSw <- vector() 
+  for (i in 2:maxCluster) { 
+    km <- kmeans(data, centers =i) 
+    bet <- km$betweenss 
+    tot <- km$totss 
+    SSw[i] <- bet/tot*100 
+    } 
+  plot(1:maxCluster, SSw, type = "o", xlab = "Number of Clusters", 
+       ylab = "Within groups sum of squares", pch=19) } 
+
+wss(iris_clean)
+```
+
+```{r}
+set.seed(34)
+iris_clust <- kmeans(iris_clean, 3)
+iris_clust$betweenss/iris_clust$totss
+```
+
+```{r}
+table(iris_clust$cluster, iris$Species)
+```
+
+```{r}
+library(ggplot2) 
+ggplot(data = iris_clean, aes(x = Sepal.Length, y = Sepal.Width, col = as.factor(iris_clust$cluster))) +
+  geom_point() + labs(x = "Sepal Length", y = "Sepal Width", title = "Penggerombolan based on Sepal Length and Sepal Width") + guides(col = FALSE) + theme_minimal()
+```
+
+#DBSCAN
+
+```{r}
+library(fpc) 
+library(dbscan)
+```
+
+```{r}
+model_db <- dbscan(iris_clean, eps = 0.7, minPts = 5) 
+library(factoextra) 
+fviz_cluster(model_db, data = iris_clean, stand = FALSE, 
+             ellipse = FALSE, show.clust.cent = FALSE, 
+             geom = "point",palette = "jco") 
+table(model_db$cluster, iris$Species)
+```
+
+#Contoh Kasus Hierarchical Clustering
+
+```{r}
+model_hie <- hclust(dist(iris_clean)) 
+plot(model_hie)
+```
+
+```{r}
+clusterCut <- cutree(model_hie, 3)
+table(clusterCut, iris$Species)
+```
+
+#Contoh Kasus Relief Feature Selection
+
+```{r}
+library(FSelector)
+data(iris) 
+weights <- relief(Species~., iris, neighbours.count = 5, sample.size = 20) 
+print(weights) 
+subset <- cutoff.k(weights, 2) 
+f <- as.simple.formula(subset, "Species") 
+print(f)
+```
+
+
+
