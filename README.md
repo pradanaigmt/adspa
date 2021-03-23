@@ -1,4 +1,4 @@
-# adspa
+# ADSPA - TIN511
 Praktikum Machine Learning
 
 Ini merupakan halaman pembantu untuk memahami Bab VII pada Modul ADSPA.
