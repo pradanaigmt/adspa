@@ -4,7 +4,8 @@ Praktikum Machine Learning
 Ini merupakan halaman pembantu untuk memahami Bab VII pada Modul ADSPA.
 Silahkan download file yang dibutuhkan pada bagian pojok kanan atas dan open melalui RStudio di laptop masing-masing.
 
-#Shortcut
+----
+# Shortcut
 
 ctrl + alt + i --> membuat chunk
 
@@ -17,8 +18,8 @@ alt + - --> membuat assignment operator (<-)
 ctrl + shift + m --> membuat pipes (%>%)
 
 
-
-#Menginstall Packages
+-----
+# Menginstall Packages
 
 Bisa dilakukan di area editor maupun di console. Kita sarankan di console saja karena proses install hanya perlu sekali.
 
@@ -29,7 +30,8 @@ panggil dengan cara:
 
 library("nama_library_yang_mau_diaktifkan")
 
-## Menetapkan Working Directory
+-----
+# Menetapkan Working Directory
 setwd("lokasi_directory")
 
 contoh
