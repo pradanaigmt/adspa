@@ -28,3 +28,12 @@ untuk mengaktifkan library bisa centang pada menu packages pada menu informasi d
 panggil dengan cara:
 
 library("nama_library_yang_mau_diaktifkan")
+
+## Menetapkan Working Directory
+setwd("lokasi_directory")
+
+contoh
+
+setwd("C:/Users/ASUS/Downloads/data")
+
+silahkan download dataset yang dibutuhkan dan letakkan di working directory masing-masing
