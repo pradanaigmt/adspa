@@ -7,9 +7,13 @@ Silahkan download file yang dibutuhkan pada bagian pojok kanan atas dan open mel
 #Shortcut
 
 ctrl + alt + i --> membuat chunk
+
 ctrl + enter --> run 1 baris kode
+
 ctrl + shift + enter --> run 1 chunk
+
 alt + - --> membuat assignment operator (<-)
+
 ctrl + shift + m --> membuat pipes (%>%)
 
 
