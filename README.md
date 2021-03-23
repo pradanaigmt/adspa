@@ -17,7 +17,9 @@ alt + - --> membuat assignment operator (<-)
 ctrl + shift + m --> membuat pipes (%>%)
 
 
+
 #Menginstall Packages
+
 Bisa dilakukan di area editor maupun di console. Kita sarankan di console saja karena proses install hanya perlu sekali.
 
 install.packages("nama_library_yang_mau_diinstall")
